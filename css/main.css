@@ -9,6 +9,11 @@ header h1 {
     text-transform: capitalize;
 }
 
+header h2 {
+    margin-top: 10px;
+    text-align: center;
+}
+
 footer {
     position: absolute;
     bottom: 0;
@@ -17,4 +22,12 @@ footer {
 
 footer p {
     text-align: center;
+}
+
+svg {
+    display: block;
+    width: 1400px;
+    margin: 20px auto;
+    outline: 3px solid #aaa;
+    box-shadow: -3px 3px 5px 3px #aaa;
 }
