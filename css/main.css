@@ -27,6 +27,7 @@ footer p {
 svg {
     display: block;
     width: 1400px;
+    height: 600px;
     margin: 20px auto;
     outline: 3px solid #aaa;
     box-shadow: -3px 3px 5px 3px #aaa;
