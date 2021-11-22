@@ -1,22 +1,23 @@
+const MONTHS = [
+    "january", 
+    "february", 
+    "march",
+    "april", 
+    "may", 
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december"
+];
+
 export default {
     numberToMonth: (number) => {
         if(isNaN(number) || number < 1 || number > 12)
             return "";
-        let months = [
-            "january", 
-            "february", 
-            "march",
-            "april", 
-            "may", 
-            "june",
-            "july",
-            "august",
-            "september",
-            "october",
-            "november",
-            "december"
-        ];
-        return months[number - 1];
+        return MONTHS[number - 1];
     },
     createSvgContainer: (parent = "body") => {
         return d3.select(parent).append("svg");
@@ -34,48 +35,37 @@ export default {
     },
     createMonthsScale: (height, padding) => {
         return d3.scaleBand()
-                    .domain([
-                        "january", 
-                        "february", 
-                        "march",
-                        "april", 
-                        "may", 
-                        "june",
-                        "july",
-                        "august",
-                        "september",
-                        "october",
-                        "november",
-                        "december"
-                    ])
+                    .domain(MONTHS)
                     .range([height - padding, padding / 2]);
     },
     addYearsAxis: (svgElement = {}, axisTitle, yearsScale, horizontalDisplacement) => {
-        let xAxis = d3.axisBottom(yearsScale).ticks(26);
+        let xAxis = d3.axisBottom(yearsScale)
+                        .ticks(26)
+                        .tickFormat(d3.format("d"));
         
         svgElement.append("g")
-            .attr("transform", `translate(0, ${horizontalDisplacement})`)
-            .call(xAxis);
+                    .attr("transform", `translate(0, ${horizontalDisplacement})`)
+                    .call(xAxis);
     
         svgElement.append("text")
-            .attr("x", "50%")
-            .attr("y", horizontalDisplacement + 40)
-            .attr("dominant-baseline", "middle")
-            .attr("text-anchor", "middle")
-            .text(axisTitle);
+                    .attr("x", "50%")
+                    .attr("y", horizontalDisplacement + 40)
+                    .attr("dominant-baseline", "middle")
+                    .attr("text-anchor", "middle")
+                    .text(axisTitle);
     },
     addMonthsAxis: (svgElement = {}, axisTitle, monthsScale, verticalDisplacement) => {
         let yAxis = d3.axisLeft(monthsScale);
 
         svgElement.append("g")
-            .attr("transform", `translate(${verticalDisplacement}, 0)`)
-            .call(yAxis);
+                    .attr("transform", `translate(${verticalDisplacement}, 0)`)
+                    .call(yAxis);
     
         svgElement.append("text")
-            .attr("x", "-20%")
-            .attr("y", verticalDisplacement - 70)
-            .attr("transform", "rotate(270)")
-            .text(axisTitle);
+                    .attr("x", "-20%")
+                    .attr("y", verticalDisplacement - 70)
+                    .attr("transform", "rotate(270)")
+                    .text(axisTitle);
     }
 
 }
