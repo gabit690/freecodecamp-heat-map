@@ -13,6 +13,17 @@ const MONTHS = [
     "december"
 ];
 
+const COLORS = [
+    "#000080",
+    "#4D55AA",
+    "#9AA9D5",
+    "#E7FEFF",
+    "#FFFFE0",
+    "#E5B5A1",
+    "#CC6C61",
+    "#B22222"
+]
+
 export default {
     numberToMonth: (number) => {
         if(isNaN(number) || number < 1 || number > 12)
@@ -44,28 +55,52 @@ export default {
                         .tickFormat(d3.format("d"));
         
         svgElement.append("g")
+                    .attr("id", "x-axis")
                     .attr("transform", `translate(0, ${horizontalDisplacement})`)
-                    .call(xAxis);
-    
-        svgElement.append("text")
+                    .call(xAxis)
+                    .append("text")
                     .attr("x", "50%")
-                    .attr("y", horizontalDisplacement + 40)
+                    .attr("y", 40)
                     .attr("dominant-baseline", "middle")
                     .attr("text-anchor", "middle")
+                    .attr("fill", "black")
                     .text(axisTitle);
     },
     addMonthsAxis: (svgElement = {}, axisTitle, monthsScale, verticalDisplacement) => {
         let yAxis = d3.axisLeft(monthsScale);
 
         svgElement.append("g")
+                    .attr("id", "y-axis")
                     .attr("transform", `translate(${verticalDisplacement}, 0)`)
-                    .call(yAxis);
-    
-        svgElement.append("text")
-                    .attr("x", "-20%")
-                    .attr("y", verticalDisplacement - 70)
+                    .call(yAxis)
+                    .append("text")
+                    .attr("x", "-18%")
+                    .attr("y", -70)
                     .attr("transform", "rotate(270)")
+                    .attr("fill", "black")
                     .text(axisTitle);
+    },
+    addTemperatureReference: (svgElement = {}, height, padding) => {
+        
+        let xScale = d3.scaleLinear([0.0, 17.0], [padding, padding + (COLORS.length * 50)]);
+        let xAxis = d3.axisBottom(xScale)
+                        .tickValues([0.0, 2.5, 4, 5.5, 7, 8.5, 10, 11.5, 13, 14.5, 17.0])
+                        .tickFormat(t => t);
+
+        svgElement.append("g")
+                    .attr("id", "legend")
+                    .attr("transform", `translate(0, ${height - 40})`)
+                    .call(xAxis)
+                    .selectAll("rect")
+                    .data([2.5, 4, 5.5, 7, 8.5, 10, 11.5, 13])
+                    .enter()
+                    .append("rect")
+                    .attr("x", (d, i) => xScale(d))
+                    .attr("y", -40)
+                    .attr("width", 35.5)
+                    .attr("height", 40)
+                    .attr("stroke", "black")
+                    .attr("fill", (d, i) => COLORS[i]);
     }
 
 }
