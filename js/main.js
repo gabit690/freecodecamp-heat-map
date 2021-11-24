@@ -13,6 +13,7 @@ const showGraph = (dataset, baseTemperature) => {
     console.log(dataset);
     console.log(graphData);
     functions.buildHeatMap(svg, xScale, yScale, graphData);
+    functions.addTooltip();
     functions.addTemperatureReference(svg, HEIGHT, PADDING);
 };
 

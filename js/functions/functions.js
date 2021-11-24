@@ -16,39 +16,43 @@ const MONTHS = [
 const COLORS = [
     {
         color: "#4575B4",
-        range: [1, 2.5]
+        range: [1, 2.4]
     },
     {
         color: "#74ADD1",
-        range: [2.5, 4]
+        range: [2.4, 3.8]
     },
     {
         color: "#ABD9E9",
-        range: [4, 5.5]
+        range: [3.8, 5.2]
     },
     {
         color: "#E0F3F8",
-        range: [5.5, 7]
+        range: [5.2, 6.6]
     },
     {
         color: "#FFFFBF",
-        range: [7, 8.5]
+        range: [6.6, 8]
     },
     {
         color: "#FEE090",
-        range: [8.5, 10]
+        range: [8, 9.4]
     },
     {
         color: "#FDAE61",
-        range: [10, 11.5]
+        range: [9.4, 10.8]
     },
     {
         color: "#F46D43",
-        range: [11.5, 13]
+        range: [10.8, 12.2]
     },
     {
         color: "#D73027",
-        range: [13, 14.5]
+        range: [12.2, 13.6]
+    },
+    {
+        color: "#A50000",
+        range: [13.6, 15]
     }
 ];
 
@@ -78,12 +82,12 @@ const temperatureToColor = (temperature = 10) => {
     return color;
 };
 
-const temperatureFormatted = (temperature = 0) => {
-    return `${temperature.toFixed(1)}°C`;
+const temperatureFormatted = (temperature) => {
+    return `${Number(temperature).toFixed(1)}°C`;
 };
 
-const temperatureVarianceFormatted = (variance = 0) => {
-    return `${variance >= 0 ? "+":""}${variance.toFixed(1)}°C`;
+const temperatureVarianceFormatted = (variance) => {
+    return `${Number(variance) >= 0 ? "+":""}${Number(variance).toFixed(1)}°C`;
 };
 
 export default {
@@ -157,18 +161,52 @@ export default {
                     .attr("data-month", (d, i) => monthToNumber(d.month))
                     .attr("data-year", (d, i) => d.year)
                     .attr("data-temp", (d, i) => d.temperature)
-                    .attr("color-code", (d, i) => temperatureToColor(d.temperature))
+                    .attr("data-variance", (d, i) => d.variance)
                     .attr("x", (d, i) => xScale(d.year) - 2.5)
                     .attr("y", (d, i) => yScale(d.month))
-                    .attr("width", 5)
+                    .attr("width", 3.7)
                     .attr("height", 31)
-                    .attr("fill", (d, i) => temperatureToColor(d.temperature));
+                    .attr("fill", (d, i) => temperatureToColor(d.temperature))
+                    .on("mouseover", (event) => {
+                        let rect = event.target;
+                        console.log(rect);
+                        rect.setAttribute("stroke", "black");
+                        d3.select("#tooltip")
+                            .attr("data-year", event.target.getAttribute("data-year"))
+                            .style("display", "block")
+                            .style("top", `${rect.getAttribute("y") - 80}px`)
+                            .style("left", `${Math.round(rect.getAttribute("x")) + 110}px`);
+                        d3.select("#tooltip p:nth-child(1)")
+                            .text(`${rect.getAttribute("data-year")} - ${MONTHS[rect.getAttribute("data-month")]}`);
+                        d3.select("#tooltip p:nth-child(2)")
+                        .text(temperatureFormatted(rect.getAttribute("data-temp")));
+                        d3.select("#tooltip p:nth-child(3)")
+                        .text(temperatureVarianceFormatted(rect.getAttribute("data-variance")));
+                    })
+                    .on("mouseout", (event) => {
+                        let rect = event.target;
+                        rect.setAttribute("stroke", "none");
+                        d3.select("#tooltip")
+                            .style("display", "none");
+                    });
+    },
+    addTooltip: () => {
+        d3.select("main")
+            .append("div")
+            .attr("id", "tooltip")
+            .attr("data-year", 0)
+            .selectAll("p")
+            .data(["date", "temperature", "variance"])
+            .enter()
+            .append("p")
+            .style("text-transform", "capitalize")
+            .text((d, i) => d);
     },
     addTemperatureReference: (svgElement = {}, height, padding) => {
         
-        let xScale = d3.scaleLinear([0.0, 15.5], [padding, padding + (COLORS.length * 50)]);
+        let xScale = d3.scaleLinear([0, 16], [padding, padding + (COLORS.length * 50)]);
         let xAxis = d3.axisBottom(xScale)
-                        .tickValues([1, 2.5, 4, 5.5, 7, 8.5, 10, 11.5, 13, 14.5])
+                        .tickValues([1, 2.4, 3.8, 5.2, 6.6, 8, 9.4, 10.8, 12.2, 13.6, 15])
                         .tickFormat(t => t.toFixed(1));
 
         svgElement.append("g")
@@ -176,7 +214,7 @@ export default {
                     .attr("transform", `translate(0, ${height - 40})`)
                     .call(xAxis)
                     .selectAll("rect")
-                    .data([1, 2.5, 4, 5.5, 7, 8.5, 10, 11.5, 13])
+                    .data([1, 2.4, 3.8, 5.2, 6.6, 8, 9.4, 10.8, 12.2, 13.6])
                     .enter()
                     .append("rect")
                     .attr("x", (d, i) => xScale(d))
